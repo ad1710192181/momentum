@@ -11,7 +11,7 @@
 
 ## 运行 Momentum.py 文件
 
-要运行 `Momentum.py` 文件，请确保已安装必需的依赖项。然后可以使用以下命令在命令行中运行文件：
+要运行 `Momentum.py` 文件，请确保已安装必需的依赖项TuShare。然后可以使用以下命令在命令行中运行文件：
 
 ```bash
 python Momentum.py
