@@ -1,4 +1,4 @@
-# Momentum investing
+# 基于TuShare的动量定理择股系统， Momentum investing  
 1.确定可投资领域(去除北交所，ST股，停牌，流通市值较小等股票)
 
 2.一般动量筛查(根据股票动量进行排序)
