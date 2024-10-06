@@ -5,7 +5,7 @@ from pandas import DataFrame
 import datetime
 from dateutil.relativedelta import relativedelta
 
-ts.set_token('...')
+ts.set_token('194db43908c0e873e24a492a90e0d0f6157b79fa6204718377796b1e')
 pro = ts.pro_api()
 
 
@@ -83,11 +83,6 @@ def RPS_compute2(stock_table: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    # df_all= pd.read_csv('20240905_Filtered_stock.csv')
-
-
-    # RPS_compute(df_all)
-    
 
 
     df= pd.read_csv('ozr_RPS_test.csv')
@@ -102,16 +97,6 @@ if __name__ == "__main__":
     sorted_df = filtered_df.sort_values(by='Total_RPS', ascending=False)
 
     sorted_df.to_csv('ozr_RPS_test2.csv', index=False)
-    #ts_code_series = df_all['ts_code']
-    #ts_name_series = df_all['name']
-    #print(individual_stock_analysis('002634.SZ'))
-#print(datetime.date.today().strftime('%Y%m%d'))
-    #kk=individual_stock_analysis('605499.SH')
-    #print(kk)
-    #bb=individual_stock_analysis('301421.SZ')
-    #print(bb)
-    # 使用 append 添加一行数据
-    # 初始化空 DataFrame
-    #exit(0)
+
 
 

@@ -1,7 +1,7 @@
 import tushare as ts
 import pandas as pd
 
-ts.set_token('...')
+ts.set_token('194db43908c0e873e24a492a90e0d0f6157b79fa6204718377796b1e')
 pro = ts.pro_api()
 
 #df = pro.trade_cal(exchange='', start_date='20180901', end_date='20181001', fields='exchange,cal_date,is_open,pretrade_date', is_open='0')

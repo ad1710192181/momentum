@@ -5,8 +5,9 @@ from pandas import DataFrame
 import datetime as dt
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import time
 
-ts.set_token('...')
+ts.set_token('194db43908c0e873e24a492a90e0d0f6157b79fa6204718377796b1e')
 pro = ts.pro_api()
 
 def data_download():
@@ -142,7 +143,7 @@ def data_download_opt(trading_days_lookback=400, circ_mv_threshold=300000, black
         filtered_name = f"{latest_trading_day()[1]}_Filtered_stock.csv"
         df_filtered.to_csv(filtered_name, index=False)
         
-        return True
+        return df_filtered
     except Exception as e:
         print(f"Data_download_opt Error occurred: {e}")
         return False
@@ -229,17 +230,26 @@ def quantify_momentum_compute(stock_table: pd.DataFrame):
     ts_code_series = stock_table['ts_code']
     ts_name_series = stock_table['name']
     ts_industry_series = stock_table['industry']
+    ts__circ_mv_series = stock_table['circ_mv']//10000
 
     # 创建一个 DataFrame 用于存放分析结果
     results = []
 
+
+    count = 0  # 初始化计数器
     # 遍历股票代码进行分析
-    for ts_code, name, industry in zip(ts_code_series, ts_name_series, ts_industry_series):
+    for ts_code, name, industry ,circ_mv in zip(ts_code_series, ts_name_series, ts_industry_series, ts__circ_mv_series):
+        #time.sleep(0.3)       #规避1分钟内访问次数过多，目前权限1分钟800次
         tmp = individual_stock_analysis(ts_code)
-        results.append([ts_code, name, industry, tmp['PC250'] , tmp["FID"]])
+        results.append([ts_code, name, industry, circ_mv, tmp['PC250'] , tmp["FID"]])
+
+        count += 1  # 计数器加1
+        if count >= 700:  # 每500次停顿
+            time.sleep(60)  # 暂停60秒
+            count = 0  # 重置计数器
 
     # 创建结果 DataFrame
-    RPS_table = pd.DataFrame(results, columns=['ts_code', 'name', 'industry', 'PC250', 'FID'])
+    RPS_table = pd.DataFrame(results, columns=['ts_code', 'name', 'industry', 'circ_mv' ,'PC250', 'FID'])
     
     total = RPS_table.shape[0]
 
@@ -253,9 +263,11 @@ def quantify_momentum_compute(stock_table: pd.DataFrame):
     #RPS_table['120RPS'] = round((1 - (RPS_table['120RPS_Rank'] - 1) / (total - 1)) * 100, 2)
     RPS_table['250RPS'] = round((1 - (RPS_table['250RPS_Rank'] - 1) / (total - 1)) * 100, 2)
 
+    RPS_table = RPS_table[RPS_table["250RPS"] > 88]
+    RPS_table = RPS_table.sort_values(by="FID", ascending=False)
     # 将结果保存到 CSV 文件
-    RPS_table.to_csv('ozr_momentum_test.csv', index=False)
-
+    RPS_table.to_csv('Momentum/ozr_momentum_test_tao.csv', index=False)
+    
     return RPS_table
     # 将结果保存到 xlsx 文件
     #RPS_table.to_excel('ozr_test.xlsx', index=False)
@@ -263,20 +275,24 @@ def quantify_momentum_compute(stock_table: pd.DataFrame):
 
 if __name__ == "__main__":
     
-    # data_download_opt()
-    # filtered_name = f"{latest_trading_day()[1]}_Filtered_stock.csv"
-    # df_all= pd.read_csv(filtered_name)
-    # quantify_momentum_compute(df_all)
-    df_tmp= pd.read_csv('ozr_momentum_test.csv')
-    # 过滤出 250RPS > 90 的行
-    filtered_df = df_tmp[df_tmp["250RPS"] > 90]
-    # 按 FID 列从大到小排序
-    sorted_df = filtered_df.sort_values(by="FID", ascending=False)
-    sorted_df.to_csv('ozr_momentum_test2.csv', index=False)
-    #data_download()
-    #data_download_opt()
-    #Stock_filter()
-    # print(individual_stock_analysis('600900.SH'))
+    #df_stock=data_download_opt()
+    #ts__circ_mv_series = df_stock['circ_mv'].mod(1000)
+    
+
+    df_tao = pd.read_csv('20241001_filtered_stocks_Drtao.csv')
+    dd=quantify_momentum_compute(df_tao)
+    dd.to_excel('Otto_20240930.xlsx', index=False)
+    
+
+    # 读取 CSV 文件
+    #df = pd.read_csv('Momentum/ozr_momentum_test_tao.csv')
+
+    # 保存为 Excel 文件
+    #df.to_excel('otto.xlsx', index=False)
+
+    #df_tmp= pd.read_csv('ozr_momentum_test.csv')
+    
+    # print(individual_stock_analysis('000021.SZ'))
     # print(individual_stock_analysis('605499.SH'))
     # print(individual_stock_analysis('002463.SZ'))
     # print(individual_stock_analysis('002938.SZ'))
